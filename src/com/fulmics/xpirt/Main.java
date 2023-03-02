@@ -19,6 +19,7 @@ package com.fulmics.xpirt;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
@@ -44,7 +45,7 @@ public class Main {
         System.out.println("GetApkSignInfo v" + VERSION + " - get useful signature information out of apk/jar files");
         System.out.println("Copyright(c) 2017, Andrei Conache <conache.and@gmail.com>\n");
 
-        String apkPath = null;
+        String apkPath = "";
         if (args.length == 1) {
             // Accept first argument only
             apkPath = args[0];
@@ -164,9 +165,9 @@ public class Main {
 
                     // Get signature information
                     byte[] certEncoded = cert.getEncoded();
-                    String md5Signature = calculateDigest(certEncoded,"MD5");
-                    String sha1Signature = calculateDigest(certEncoded, "SHA1");
-                    String charSignature = new String(bytesToChars(certEncoded));
+                    String md5Signature = calculateDigest(getHexString(certEncoded).getBytes(),"MD5");
+                    String sha1Signature = calculateDigest(getHexString(certEncoded).getBytes(), "SHA1");
+                    String charSignature = new String(bytesToChars(certEncoded)).toUpperCase();
 
                     System.out.println("Signature MD5: " + md5Signature);
                     System.out.println("Signature SHA1: " + sha1Signature);
@@ -235,6 +236,10 @@ public class Main {
             text[k * 2 + 1] = (char) (d >= 10 ? ('a' + d - 10) : ('0' + d));
         }
         return text;
+    }
+
+    private static String getHexString(byte[] digest) {
+        return new String(bytesToChars(digest)).toUpperCase();
     }
 
     // Calculate digest given algorithm
